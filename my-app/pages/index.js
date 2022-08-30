@@ -1,7 +1,7 @@
 import { BigNumber, providers, utils } from "ethers";
 import Head from 'next/head';
 import React, { useEffect, useRef, useState } from "react";
-import Web3Modal, { PROVIDER_NAME_CLASSNAME } from "web3modal";
+import Web3Modal from "web3modal";
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { addLiquidity, calculatePb } from "../utils/addLiquidity";
@@ -29,7 +29,7 @@ export default function Home() {
   // that the user is on `liquidity` tab else he is on `swap` tab
   const [liquidityTab, setLiquidityTab] = useState(true);
   // reservedPb keeps track of the Pleb tokens Reserve balance
-  const [reservedPb, setReservePb] = useState(zero);
+  // const [reservedPb, setReservePb] = useState(zero);
   // addEther is the amount of Ether that the user wants to add to the liquidity
   const [addEther, setAddEther] = useState(zero);
   // addPb is the amount of Pleb token that the user wants to add to the liquidity
@@ -87,15 +87,15 @@ export default function Home() {
     }
   }
 
-  const calculatePb = async() => {
-    try {
-        const addEtherWei = utils.parseEther(addEther.toString());
-        const addPbTokens = await calculatePb(addEtherWei, ethBalanceContract, pbReserve )
-        return addPbTokens;
-    } catch (error) {
-        console.error(error);
-    }
-  }
+  // const calculatePB = async() => {
+  //   try {
+  //       const addEtherWei = utils.parseEther(addEther.toString());
+  //       const addPbTokens = await calculatePb(addEtherWei, ethBalanceContract, pbReserve)
+  //       return addPbTokens;
+  //   } catch (error) {
+  //       console.error(error);
+  //   }
+  // }
 
 
   const _addLiquidity = async() => {
@@ -213,7 +213,7 @@ export default function Home() {
           provider,
           ethSelected,
           _ethBalance,
-          reservedPb
+          pbReserve
         );
         setTokensToBeReceivedAfterSwap(amountOfTokens);
       } else {
@@ -307,7 +307,7 @@ export default function Home() {
             {/* If reserved Pb is zero, render the state for liquidity zero where we ask the user
             how much initial liquidity he wants to add else just render the state where liquidity is not zero and
             we calculate based on the `Eth` amount specified by the user how much `Pb` tokens can be added */}
-            {utils.parseEther(reservedPb.toString()).eq(zero) ? (
+            {utils.parseEther(pbReserve.toString()).eq(zero) ? (
               <div>
                 <input
                   type="number"
@@ -327,7 +327,7 @@ export default function Home() {
                   Add
                 </button>
               </div>
-            ): (
+            ) : (
               <div>
                 <input
                   type="number"
@@ -338,7 +338,7 @@ export default function Home() {
                     const _addPbTokens = await calculatePb(
                       e.target.value || "0",
                       ethBalanceContract,
-                      reservedPb
+                      pbReserve
                     );
                     setAddPbTokens(_addPbTokens);
                   }}

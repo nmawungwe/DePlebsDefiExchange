@@ -15,7 +15,7 @@ export const getAmountOfTokensReceivedFromSwap = async(
     provider,
     ethSelected,
     ethBalance,
-    reservedPb
+    pbReserve
 ) => {
     const exchangeContract = new Contract(
         EXCHANGE_CONTRACT_ADDRESS,
@@ -31,7 +31,7 @@ export const getAmountOfTokensReceivedFromSwap = async(
         amountOfTokens = await exchangeContract.getAmountOfTokens(
             _swapAmountWei,
             ethBalance,
-            reservedPb
+            pbReserve
         );
     } else {
     // If `Eth` is not selected this means our input value is `Crypto Dev` tokens which means our input amount would be
@@ -39,7 +39,7 @@ export const getAmountOfTokensReceivedFromSwap = async(
     // would be the `ethBalance` 
         amountOfTokens = await exchangeContract.getAmountOfTokens(
             _swapAmountWei,
-            reservedPb,
+            pbReserve,
             ethBalance
         );
     }
@@ -50,7 +50,7 @@ export const getAmountOfTokensReceivedFromSwap = async(
 export const swapTokens = async(
     signer,
     swapAmountWei,
-    tokenToBeReceivedAfterSwap,
+    tokensToBeReceivedAfterSwap,
     ethSelected
 )=> {
     const exchangeContract = new Contract(
@@ -70,7 +70,7 @@ export const swapTokens = async(
     // As you can see you need to pass the `swapAmount` as a value to the function because
     // it is the ether we are paying to the contract, instead of a value we are passing to the function
     if (ethSelected) {
-        tx = await exchangeContract.ethToDePlebToken(tokenToBeReceivedAfterSwap,
+        tx = await exchangeContract.ethToDePlebToken(tokensToBeReceivedAfterSwap,
             {
                 value: swapAmountWei,
             });
@@ -80,14 +80,14 @@ export const swapTokens = async(
         tx = await tokenContract.approve(
             EXCHANGE_CONTRACT_ADDRESS,
             swapAmountWei.toString()
-        )
+        );
 
         await tx.wait();
     // call cryptoDevTokenToEth function which would take in `swapAmountWei` of `Crypto Dev` tokens and would
     // send back `tokenToBeReceivedAfterSwap` amount of `Eth` to the user
     tx = await exchangeContract.dePlebTokenToEth(
         swapAmountWei,
-        tokenToBeReceivedAfterSwap
+        tokensToBeReceivedAfterSwap
         );
     }
 
